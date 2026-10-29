@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Results - {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="card-container animate__animated animate__fadeIn">
+  <h2>Election Results</h2>
+  <p class="subtitle">{{ election.title }} — Total Votes Cast: <strong>{{ total_votes }}</strong></p>
+
+  {% for row in results %}
+    {% set percentage = ((row.vote_count / total_votes * 100) if total_votes > 0 else 0) | round(1) %}
+    <div class="result-item">
+      <div style="display: flex; justify-content: space-between; font-weight: 600;">
+        <span>{{ row.name }} ({{ row.party }})</span>
+        <span>{{ row.vote_count }} votes ({{ percentage }}%)</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width: {{ percentage }}%;"></div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <div style="margin-top: 2rem;">
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+  </div>
+</div>
+{% endblock %}

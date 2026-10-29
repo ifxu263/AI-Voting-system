@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}AI Voting System{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='Style.css') }}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-brand"><a href="{{ url_for('index') }}">AI Voting System</a></div>
+    <div class="nav-links">
+      {% if session.get('user_id') %}
+        <span>Hello, <strong>{{ session.get('username') }}</strong></span>
+        {% if session.get('role') == 'admin' %}
+          <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+        {% else %}
+          <a href="{{ url_for('vote') }}">Vote</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Flash Notification Handler -->
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          {% for category, message in messages %}
+            Swal.fire({
+              title: {{ message | tojson }},
+              icon: "{{ 'success' if category == 'success' else 'error' if category == 'error' else 'info' }}",
+              timer: 2500,
+              showConfirmButton: false
+            });
+          {% endfor %}
+        });
+      </script>
+    {% endif %}
+  {% endwith %}
+
+  <main class="main-container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='Style.js') }}"></script>
+</body>
+</html>

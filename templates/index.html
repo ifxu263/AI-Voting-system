@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - AI Voting System{% endblock %}
+
+{% block content %}
+<div class="card-container animate__animated animate__fadeIn">
+  <h1>Welcome to the AI-Powered Online Voting System</h1>
+  <p class="subtitle">Secure, transparent, and verified democratic process using OpenCV facial verification.</p>
+
+  <div style="margin-top: 2rem;">
+    {% if session.get('user_id') %}
+      <a href="{{ url_for('vote') }}" class="btn btn-primary">Proceed to Election</a>
+    {% else %}
+      <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Vote</a>
+      <a href="{{ url_for('register') }}" class="btn btn-secondary" style="margin-left: 0.5rem;">New Voter Registration</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

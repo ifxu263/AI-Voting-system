@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Cast Vote - {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="card-container animate__animated animate__fadeIn">
+  <h2>{{ election.title }}</h2>
+  <p class="subtitle">{{ election.description }}</p>
+
+  <form action="{{ url_for('vote') }}" method="POST">
+    <div class="candidate-grid">
+      {% for candidate in candidates %}
+        <label class="candidate-card">
+          <input type="radio" name="candidate_id" value="{{ candidate.id }}" required />
+          <div class="card-content">
+            <h3>{{ candidate.name }}</h3>
+            <span class="party-badge">{{ candidate.party }}</span>
+          </div>
+        </label>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+      Cast My Vote
+    </button>
+  </form>
+</div>
+{% endblock %}

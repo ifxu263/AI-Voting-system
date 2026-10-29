@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - AI Voting System{% endblock %}
+
+{% block content %}
+<div class="card-container animate__animated animate__fadeInDown" style="max-width: 450px; margin: auto;">
+  <h2>Voter Login</h2>
+  <p class="subtitle">Please enter your credentials to cast your vote.</p>
+
+  <form action="{{ url_for('login') }}" method="POST">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Enter Username" required autocomplete="username" />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter Password" required autocomplete="current-password" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+  </form>
+
+  <p style="margin-top: 1.5rem; text-align: center;">
+    Don't have an account? <a href="{{ url_for('register') }}">Register Here</a>
+  </p>
+</div>
+{% endblock %}

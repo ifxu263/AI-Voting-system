@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Voter Registration - AI Voting System{% endblock %}
+
+{% block content %}
+<div class="card-container animate__animated animate__fadeInUp" style="max-width: 550px; margin: auto;">
+  <h2>Voter Registration</h2>
+  <p class="subtitle">Upload a photo OR capture live using your webcam for AI verification.</p>
+
+  <form action="{{ url_for('register') }}" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Choose Username" required />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="Enter Email" required />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Choose Password" required />
+    </div>
+
+    <!-- Live Camera Option -->
+    <div class="form-group">
+      <label>Facial Verification Photo</label>
+      
+      <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <button type="button" id="start-cam-btn" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Start Camera</button>
+      </div>
+
+      <!-- Live Video Feed -->
+      <div id="camera-box" style="display: none; text-align: center; margin-bottom: 10px;">
+        <video id="video" width="100%" height="auto" autoplay playsinline style="border-radius: 8px; border: 2px solid #2ec4b6; max-height: 250px; background: #000;"></video>
+        <button type="button" id="capture-btn" class="btn btn-primary" style="margin-top: 8px;">Capture Photo</button>
+      </div>
+
+      <!-- Canvas for Capturing -->
+      <canvas id="canvas" style="display: none;"></canvas>
+
+      <!-- Preview Captured / Uploaded Image -->
+      <div id="preview-box" style="display: none; text-align: center; margin-bottom: 10px;">
+        <img id="photo-preview" src="" alt="Captured Image" style="max-width: 100%; border-radius: 8px; max-height: 200px; border: 2px solid #2ec4b6;" />
+        <p style="font-size: 0.85rem; color: #27ae60; margin-top: 4px;">Photo captured successfully!</p>
+      </div>
+
+      <!-- Hidden Base64 Camera Input -->
+      <input type="hidden" id="camera_image" name="camera_image" />
+
+      <!-- Fallback File Upload Option -->
+      <p style="margin: 10px 0 5px 0; font-size: 0.85rem; color: #7f8c8d;">Or upload image file from gallery:</p>
+      <input type="file" id="face_image" name="face_image" accept="image/png, image/jpeg, image/jpg" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Register & Verify Photo</button>
+  </form>
+
+  <p style="margin-top: 1.5rem; text-align: center;">
+    Already registered? <a href="{{ url_for('login') }}">Login Here</a>
+  </p>
+</div>
+
+<!-- Camera Script -->
+<script>
+  const startCamBtn = document.getElementById('start-cam-btn');
+  const captureBtn = document.getElementById('capture-btn');
+  const cameraBox = document.getElementById('camera-box');
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const photoPreview = document.getElementById('photo-preview');
+  const previewBox = document.getElementById('preview-box');
+  const cameraInput = document.getElementById('camera_image');
+  const fileInput = document.getElementById('face_image');
+
+  let stream = null;
+
+  startCamBtn.addEventListener('click', async () => {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+      video.srcObject = stream;
+      cameraBox.style.display = 'block';
+      startCamBtn.innerText = 'Retake Photo';
+    } catch (err) {
+      alert("Camera permission denied or camera not found!");
+    }
+  });
+
+  captureBtn.addEventListener('click', () => {
+    const context = canvas.getContext('2d');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Convert canvas frame to base64 JPEG
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    cameraInput.value = dataUrl;
+    photoPreview.src = dataUrl;
+    previewBox.style.display = 'block';
+
+    // Stop video stream after capture
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+    cameraBox.style.display = 'none';
+
+    // Reset file input if camera is used
+    fileInput.value = '';
+  });
+</script>
+{% endblock %}

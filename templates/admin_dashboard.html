@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - AI Voting System{% endblock %}
+
+{% block content %}
+<div class="card-container animate__animated animate__fadeIn">
+  <h2>Admin Control Panel</h2>
+  
+  <!-- Create Election Form -->
+  <div style="margin-bottom: 2.5rem; background: #f8fafc; padding: 1.5rem; border-radius: 8px;">
+    <h3>Create New Election</h3>
+    <form action="{{ url_for('admin_dashboard') }}" method="POST">
+      <input type="hidden" name="action" value="create_election" />
+      <div class="form-group">
+        <label>Election Title</label>
+        <input type="text" name="title" placeholder="e.g. 2026 Student Council Election" required />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" placeholder="Brief election description" rows="2"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Create Election</button>
+    </form>
+  </div>
+
+  <!-- Add Candidate Form -->
+  <div style="margin-bottom: 2.5rem; background: #f8fafc; padding: 1.5rem; border-radius: 8px;">
+    <h3>Add Candidate to Election</h3>
+    <form action="{{ url_for('admin_dashboard') }}" method="POST">
+      <input type="hidden" name="action" value="add_candidate" />
+      <div class="form-group">
+        <label>Select Election</label>
+        <select name="election_id" required>
+          {% for e in elections %}
+            <option value="{{ e.id }}">{{ e.title }} ({{ e.status }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Candidate Name</label>
+        <input type="text" name="name" placeholder="Full Name" required />
+      </div>
+      <div class="form-group">
+        <label>Party / Affiliation</label>
+        <input type="text" name="party" placeholder="Party Name" required />
+      </div>
+      <button type="submit" class="btn btn-primary">Add Candidate</button>
+    </form>
+  </div>
+
+  <!-- Manage Elections -->
+  <div style="margin-bottom: 2.5rem;">
+    <h3>Elections Overview</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in elections %}
+          <tr>
+            <td>{{ e.id }}</td>
+            <td>{{ e.title }}</td>
+            <td><strong>{{ e.status }}</strong></td>
+            <td>
+              <form action="{{ url_for('admin_dashboard') }}" method="POST" style="display:inline;">
+                <input type="hidden" name="action" value="toggle_status" />
+                <input type="hidden" name="election_id" value="{{ e.id }}" />
+                {% if e.status == 'active' %}
+                  <input type="hidden" name="status" value="closed" />
+                  <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Close Election</button>
+                {% else %}
+                  <input type="hidden" name="status" value="active" />
+                  <button type="submit" class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Activate Election</button>
+                {% endif %}
+              </form>
+              <a href="{{ url_for('result', election_id=e.id) }}" style="margin-left: 0.5rem; font-size: 0.9rem;">View Results</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Registered Users -->
+  <div>
+    <h3>Registered Users</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>AI Verified</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+          <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ 'Yes' if u.is_verified else 'No' }}</td>
+            <td>{{ u.role }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
